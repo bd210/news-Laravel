@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\PermissionRole;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -13,6 +14,17 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        // \App\Models\User::factory(10)->create();
+        $this->call(BadWordSeeder::class);
+        $this->call(CategorySeeder::class);
+        $this->call(FileSeeder::class);
+        $this->call(PermissionSeeder::class);
+        $this->call(RoleSeeder::class);
+        $this->call(TagSeeder::class);
+        $this->call(UserSeeder::class);
+        $this->call(PostSeeder::class);
+        $this->call(PermissionRoleSeeder::class);
+        $this->call(PostTagSeeder::class);
+        $this->call(PostFileSeeder::class);
+        $this->call(CommentSeeder::class);
     }
 }

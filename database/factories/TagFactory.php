@@ -23,7 +23,6 @@ class TagFactory extends Factory
     {
         return [
             'keyword' => $this->faker->word,
-            'created_at' => date('Y-m-d H:i:s')
         ];
     }
 }

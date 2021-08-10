@@ -5,6 +5,7 @@ namespace App\Http\Controllers\front;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Comment;
+use App\Models\Permission;
 use App\Models\Post;
 use App\Models\Visit;
 use Illuminate\Database\QueryException;
@@ -19,6 +20,7 @@ class FrontendController extends Controller
 
     public function __construct()
     {
+
 
 
         $this->data['categories'] = Category::all();

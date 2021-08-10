@@ -14,14 +14,16 @@ class CategorySeeder extends Seeder
      */
 
     private $categories = ['Sport', 'Politic', 'World', 'Fun', 'Health', 'Business'];
+
     public function run()
     {
 
-       for ($i = 0; $i < count($this->categories); $i++) {
+       foreach ($this->categories as $category) {
 
            DB::table('categories')->insert([
-               'category_name' => $this->categories[$i],
-               'created_at' => date("Y-m-d H:i:s")
+               'created_at' => date('Y-m-d H:i:s') ,
+               'updated_at' => date('Y-m-d H:i:s') ,
+               'category_name' => $category
            ]);
 
        }

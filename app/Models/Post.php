@@ -20,6 +20,8 @@ class Post extends Model
         parent::boot();
 
         static::creating(function ($query) {
+
+            if (auth()->check())
             $query->author_id = auth()->user()->id;
 
         });

@@ -30,7 +30,7 @@ $number = 1;
             @endif
         </td>
         <td> {{ $comment->email }} </td>
-        <td> {{ $comment->content }} </td>
+        <td> {{ substr($comment->content, 0, 20). "..." }} </td>
 
         <td>
 

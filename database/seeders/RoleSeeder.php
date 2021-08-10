@@ -18,11 +18,14 @@ class RoleSeeder extends Seeder
     public function run()
     {
 
-        for ($i = 0; $i<count($this->roles); $i++) {
+        foreach ($this->roles as $role) {
 
             DB::table('roles')->insert([
-                'role_name' => $this->roles[$i],
-                'created_at' => date("Y-m-d H:i:s")
+
+                'created_at' => date('Y-m-d H:i:s') ,
+                'updated_at' => date('Y-m-d H:i:s') ,
+                'role_name' => $role
+
             ]);
 
         }

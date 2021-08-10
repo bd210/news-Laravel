@@ -68,7 +68,7 @@ $controller = new \App\Http\Controllers\Controller();
 
         </td>
         <td>  {{ substr($post->title, 0, 8). "..." }} </td>
-        <td> <a href="{{ route('editUser',['id' => $post['author']->id ]) }}">{{ $post['author']->first_name . " " . $post['author']->last_name }} </a></td>
+        <td> <a href="{{ route('editUser',['id' => $post['author']->id ]) }}">{{ $post['author']->first_name . " " . substr($post['author']->last_name, 0, 1) }} </a></td>
         <td> {{ $post['categories']->category_name }}</td>
         <td>  <a href="{{ route('editUser',['id' => $post['approved']->id ]) }}"> {{ $post['approved']->first_name  }} </a></td>
         <td>

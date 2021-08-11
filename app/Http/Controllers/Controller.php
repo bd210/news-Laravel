@@ -20,15 +20,21 @@ class Controller extends BaseController
     }
 
 
+
+
     public function return500()
     {
         return view('pages.errors.error_500');
     }
 
+
+
     public function return403()
     {
         return view('pages.errors.error_403');
     }
+
+
 
 
     public function returnFirstImg( $files = array())
@@ -50,6 +56,8 @@ class Controller extends BaseController
         }
 
     }
+
+
 
     public function upload($file = array())
     {

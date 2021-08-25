@@ -14,6 +14,11 @@ class Post extends Model
     protected $fillable = ['title', 'content', 'author_id' , 'category_id'];
 
 
+    public static $searchable = [
+        'title',
+        'content'
+    ];
+
 
     protected static function boot()
     {
@@ -28,13 +33,6 @@ class Post extends Model
 
 
     }
-
-
-
-    public static $searchable = [
-        'title',
-        'content'
-    ];
 
 
 

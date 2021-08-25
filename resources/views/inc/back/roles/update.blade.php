@@ -6,7 +6,7 @@
     <div class="card">
         <div class="card-body">
 
-            <form action=" {{ route('updateRole', ['id' => $role->id ]) }}" method="POST" class="form-horizontal form-material">
+            <form action=" {{ route('updateRole', ['roleID' => $role->id ]) }}" method="POST" class="form-horizontal form-material">
             @csrf
                 @method('PUT')
                 <div class="form-group mb-4">

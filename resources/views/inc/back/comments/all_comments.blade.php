@@ -35,7 +35,7 @@ $number = 1;
         <td>
 
             @can('delete', $comment)
-            <form action="{{ route('deleteComment', ['id' => $comment->id ]) }}" method="POST">
+            <form action="{{ route('deleteComment', ['com' => $comment->id ]) }}" method="POST">
                 @CSRF
                 @method('DELETE')
 

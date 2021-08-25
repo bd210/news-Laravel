@@ -40,7 +40,7 @@ $number = 1;
         <td>
 
 
-            <a href="{{ route('editPermission', ['id' => $permission->id]) }}"><i class="fas fa-edit"></i>  </a>
+            <a href="{{ route('editPermission', ['permissionID' => $permission->id]) }}"><i class="fas fa-edit"></i>  </a>
 
 
         </td>
@@ -48,7 +48,7 @@ $number = 1;
 
         <td>
             @can('delete', $permission)
-            <form action="{{ route('deletePermission', ['id' => $permission->id]) }}" method="POST">
+            <form action="{{ route('deletePermission', ['permissionID' => $permission->id]) }}" method="POST">
                 @CSRF
                 @method('DELETE')
 

@@ -7,7 +7,7 @@
     <div class="card">
         <div class="card-body">
 
-            <form action="{{ route('updateForbiddenWord', ['id' => $oneWord->id]) }}" method="post" class="form-horizontal form-material">
+            <form action="{{ route('updateForbiddenWord', ['bw' => $oneWord->id]) }}" method="post" class="form-horizontal form-material">
                 @csrf
                 @method('PUT')
                 <div class="form-group mb-4">

@@ -29,7 +29,7 @@
     <div class="col-lg-8 col-xlg-9 col-md-12">
         <div class="card">
             <div class="card-body">
-                <form action="{{ route('updateUser', ['id' => $user->id]) }}" method="POST" class="form-horizontal form-material">
+                <form action="{{ route('updateUser', ['userID' => $user->id]) }}" method="POST" class="form-horizontal form-material">
                     @csrf
                     @method('PATCH')
                     <div class="form-group mb-4">
@@ -87,7 +87,7 @@
 
                 <h2>Update password</h2>
 
-                <form action="{{ route('updateUserPassword', ['id' => $user->id]) }}" method="POST"  class="form-horizontal form-material">
+                <form action="{{ route('updateUserPassword', ['userID' => $user->id]) }}" method="POST"  class="form-horizontal form-material">
                     @csrf
                     @method('PATCH')
                     <div class="form-group mb-4">

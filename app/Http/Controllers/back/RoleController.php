@@ -5,21 +5,27 @@ namespace App\Http\Controllers\back;
 use App\Http\Requests\Roles\RoleCreateRequest;
 use App\Http\Requests\Roles\RoleUpdateRequest;
 use App\Models\Role;
+use App\Repositories\RoleRepository;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Log;
 
 class RoleController extends BackendController
 {
 
+    protected $role;
+
+    public function __construct(RoleRepository $role)
+    {
+        $this->role = $role;
+    }
+
+
 
     public function index()
     {
 
-        $role = new Role();
 
-        $this->data['roles'] = $role::query()
-            ->orderBy('created_at', 'DESC')
-            ->get();
+        $this->data['roles'] = $this->role->all();
 
         return view('pages.back.roles.all_roles', $this->data);
 
@@ -46,7 +52,7 @@ class RoleController extends BackendController
 
             try {
 
-                $result = Role::create($request->all());
+                $result = $this->role->store($request->validated());
 
                 return ($result)
                     ? redirect()->route('allRoles')->with('success', 'YOU HAVE SUCCESSFULLY CREATED ROLE')
@@ -74,17 +80,12 @@ class RoleController extends BackendController
 
 
 
-    public function edit($id)
+    public function edit(Role $roleID)
     {
-        if ($id) {
+        if ($roleID) {
 
-            $role = new Role();
 
-            $this->data['role'] = $role::query()
-                ->where('id', $id)
-                ->firstOrFail();
-
-            $result = $this->data['role'];
+            $result = $this->data['role'] = $this->role->getById($roleID->id);
 
 
             return ($result)
@@ -101,17 +102,14 @@ class RoleController extends BackendController
 
 
 
-    public function update(RoleUpdateRequest $request, $id)
+    public function update(RoleUpdateRequest $request, Role $roleID)
     {
         if ($request->exists('btnUpdateRole')) {
 
             try {
 
-                $role = Role::find($id);
 
-                $role->role_name = $request->input('role_name');
-
-                $result = $role->save();
+                $result = $this->role->update($roleID->id, $request);
 
 
                 return ($result)
@@ -139,17 +137,14 @@ class RoleController extends BackendController
 
 
 
-    public function destroy($id)
+    public function destroy(Role $roleID)
     {
         try {
 
-            if ($id){
+            if ($roleID){
 
-                $role = new Role();
 
-                $result = $role::query()
-                    ->where('id', $id)
-                    ->delete();
+                $result = $this->role->destroy($roleID->id);
 
 
                 return ($result)

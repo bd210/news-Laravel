@@ -14,6 +14,8 @@ class CreatePostLikesTable extends Migration
     public function up()
     {
         Schema::create('post_likes', function (Blueprint $table) {
+
+            $table->id();
             $table->unsignedBigInteger('post_id');
             $table->unsignedBigInteger('user_id');
 

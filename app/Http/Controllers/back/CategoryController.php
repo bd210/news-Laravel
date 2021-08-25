@@ -4,19 +4,25 @@ namespace App\Http\Controllers\back;
 use App\Http\Requests\Categories\CategoryCreateRequest;
 use App\Http\Requests\Categories\CategoryUpdateRequest;
 use App\Models\Category;
+use App\Repositories\CategoryRespository;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Log;
 
 class CategoryController extends BackendController
 {
 
+
+    protected $category;
+
+    public function __construct(CategoryRespository $category)
+    {
+        $this->category = $category;
+    }
+
     public function index()
     {
-        $category = new Category();
 
-        $this->data['categories'] = $category::query()
-            ->orderBy('created_at', 'DESC')
-            ->get();
+        $this->data['categories'] = $this->category->all();
 
         return view('pages.back.categories.all_categories', $this->data);
     }
@@ -36,11 +42,11 @@ class CategoryController extends BackendController
     public function store(CategoryCreateRequest $request)
     {
 
-        if ($request->exists('btnCreateCategory')) {
+        if ($request->has('btnCreateCategory')) {
 
             try {
 
-                $result = Category::create($request->validated());
+                $result = $this->category->store($request->validated());
 
                 return ($result)
                     ? redirect()->route('allCategories')->with('success', 'YOU HAVE SUCCESSFULLY CREATED CATEGORY')
@@ -67,18 +73,12 @@ class CategoryController extends BackendController
 
 
 
-    public function edit($id)
+    public function edit(Category $cat)
     {
 
-        if ($id) {
+        if ($cat) {
 
-            $category = new Category();
-
-            $this->data['category'] = $category::query()
-                ->where('id', $id)
-                ->firstOrFail();
-
-            $result = $this->data['category'];
+            $result = $this->data['category'] = $this->category->getById($cat->id);
 
 
             return ($result)
@@ -95,17 +95,13 @@ class CategoryController extends BackendController
     }
 
 
-    public function update(CategoryUpdateRequest $request, $id)
+    public function update(CategoryUpdateRequest $request, Category $cat)
     {
         if ($request->exists('btnUpdateCategory')) {
 
             try {
 
-               $category = Category::find($id);
-
-               $category->category_name = $request->input('category');
-
-               $result = $category->save();
+               $result = $this->category->update($cat->id, $request);
 
                 return ($result)
                     ? redirect()->route('allCategories')->with('success', 'YOU HAVE SUCCESSFULLY UPDATED CATEGORY')
@@ -131,18 +127,14 @@ class CategoryController extends BackendController
 
 
 
-    public function destroy($id)
+    public function destroy(Category $cat)
     {
         try {
 
-            if ($id){
+            if ($cat){
 
-                $category = new Category();
 
-                $result = $category::query()
-                    ->where('id', $id)
-                    ->delete();
-
+                $result = $this->category->destroy($cat->id);
 
                 return ($result)
                     ? redirect()->route('allCategories')->with('success', 'YOU HAVE SUCCESSFULLY DELETED CATEGORY')

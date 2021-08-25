@@ -37,14 +37,14 @@ $number = 1;
         <td>
 
 
-            <a href=" {{ route('editCategory', ['id' => $category->id ]) }}"><i class="fas fa-edit"></i>  </a>
+            <a href=" {{ route('editCategory', ['cat' => $category->id ]) }}"><i class="fas fa-edit"></i>  </a>
 
         </td>
 
         <td>
 
             @can('delete', $category)
-            <form action="{{ route('deleteCategory', ['id' => $category->id ]) }}" method="POST">
+            <form action="{{ route('deleteCategory', ['cat' => $category->id ]) }}" method="POST">
                 @CSRF
                 @method('DELETE')
 

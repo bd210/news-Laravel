@@ -35,7 +35,7 @@ $counts = count($posts) + count($comments) + count($users);
     <tr>
         <td> {{  $number ++ }}</td>
         <td> {{  $post->title }}</td>
-        <td><a href="{{ route('editPost', ['id' => $post->id ])  }}"><input type="submit" value="Detail" class="btn-primary"></a> </td>
+        <td><a href="{{ route('editPost', ['postID' => $post->id ])  }}"><input type="submit" value="Detail" class="btn-primary"></a> </td>
     </tr>
 
 
@@ -69,7 +69,7 @@ $counts = count($posts) + count($comments) + count($users);
             <td> {{  $number ++ }}</td>
             <td> {{  $user->first_name  . " " . $user->last_name }}</td>
             <td> {{   $user->email }}</td>
-            <td><a href="{{ route('editUser', ['id' => $user->id ])  }}"><input type="submit" value="Detail" class="btn-primary"></a> </td>
+            <td><a href="{{ route('editUser', ['userID' => $user->id ])  }}"><input type="submit" value="Detail" class="btn-primary"></a> </td>
         </tr>
 
 
@@ -100,8 +100,8 @@ $counts = count($posts) + count($comments) + count($users);
             <tr >
                 <td> {{   $number ++ }}</td>
                 <td> {{  $comment->email }}</td>
-                <td> {{   $comment->content }}</td>
-                <td><a href="{{ route('deleteComment', ['id' => $comment->id ]) }}"><input type="submit" value="Delete" class="btn-primary"></a> </td>
+                <td> {{   substr($comment->content, 0, 70 ) . "..." }}</td>
+                <td><a href="{{ route('deleteComment', ['com' => $comment->id ]) }}"><input type="submit" value="Delete" class="btn-primary"></a> </td>
             </tr>
 
 

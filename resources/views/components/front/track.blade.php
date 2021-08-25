@@ -12,7 +12,7 @@ $controller = new \App\Http\Controllers\Controller();
 
                     @foreach ($latestTrack as $latest)
 
-                    <li><a href="{{ route('singlePost', ['id' => $latest->id ]) }}" >
+                    <li><a href="{{ route('singlePost', ['postID' => $latest->id ]) }}" >
 
 
 

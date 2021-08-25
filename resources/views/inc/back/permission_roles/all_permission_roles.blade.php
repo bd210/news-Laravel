@@ -22,7 +22,7 @@ $permission_id = array();
         @foreach ($roles as $role)
         <tr>
 
-            <td>  <input type="radio" value="{{ $role->id }}" name="role_name"> <a href=" {{ route('showPermissions', ['id' => $role->id]) }}"> {{ $role->role_name }}</a> </td>
+            <td>  <input type="radio" value="{{ $role->id }}" name="role_name"> <a href=" {{ route('showPermissions', ['prID' => $role->id]) }}"> {{ $role->role_name }}</a> </td>
 
 
         </tr>

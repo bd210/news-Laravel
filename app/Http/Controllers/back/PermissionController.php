@@ -4,21 +4,25 @@ namespace App\Http\Controllers\back;
 use App\Http\Requests\Permissions\PermissionCreateRequest;
 use App\Http\Requests\Permissions\PermissionUpdateRequest;
 use App\Models\Permission;
+use App\Repositories\PermissionRepository;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Log;
 
 class PermissionController extends BackendController
 {
 
+    protected $permission;
+
+    public function __construct(PermissionRepository $permission)
+    {
+        $this->permission = $permission;
+    }
+
+
     public function index()
     {
 
-        $permission = new Permission();
-
-        $this->data['permissions'] = $permission::query()
-            ->orderBy('created_at', 'DESC')
-            ->get();
-
+        $this->data['permissions'] = $this->permission->all();
 
         return view('pages.back.permissions.all_permissions',  $this->data);
 
@@ -41,8 +45,7 @@ class PermissionController extends BackendController
 
             try {
 
-
-               $result =  Permission::create($request->validated());
+               $result =  $this->permission->store($request->validated());
 
                return ($result)
                    ? redirect()->route('allPermissions')->with('success', 'YOU HAVE SUCCESSFULLY CREATED PERMISSION')
@@ -65,18 +68,11 @@ class PermissionController extends BackendController
     }
 
 
-    public function edit($id)
+    public function edit(Permission $permissionID)
     {
-        if ($id) {
+        if ($permissionID) {
 
-            $permission = new Permission();
-
-            $this->data['permission'] = $permission::query()
-                ->where('id', $id)
-                ->firstOrFail();
-
-            $result = $this->data['permission'];
-
+            $result = $this->data['permission'] = $this->permission->getById($permissionID->id);
 
             return ($result)
                 ? view('pages.back.permissions.update', $this->data)
@@ -90,16 +86,11 @@ class PermissionController extends BackendController
     }
 
 
-    public function update(PermissionUpdateRequest $request, $id)
+    public function update(PermissionUpdateRequest $request, Permission $permissionID)
     {
             try {
 
-                $permission = Permission::find($id);
-
-                $permission->name = $request->input('name');
-                $permission->description  = $request->input('description');
-
-                $result = $permission->save();
+                $result = $this->permission->update($permissionID->id, $request);
 
                 return ($result)
                     ? redirect()->route('allPermissions')->with('success', 'YOU HAVE SUCCESSFULLY UPDATED PERMISSION')
@@ -121,17 +112,14 @@ class PermissionController extends BackendController
     }
 
 
-    public function destroy($id)
+    public function destroy(Permission $permissionID)
     {
         try {
 
-            if ($id){
+            if ($permissionID){
 
-                $permission = new Permission();
 
-                $result = $permission::query()
-                    ->where('id', $id)
-                    ->delete();
+                $result = $this->permission->destroy($permissionID->id);
 
 
                 return  ($result)

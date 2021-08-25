@@ -13,7 +13,7 @@ $controller = new \App\Http\Controllers\Controller();
                 @foreach ($latest as $post)
 
                 <li>
-                    <div class="media"> <a href="{{ route('singlePost', ['id' =>$post->id ]) }}" class="media-left">
+                    <div class="media"> <a href="{{ route('singlePost', ['postID' =>$post->id ]) }}" class="media-left">
 
 
 

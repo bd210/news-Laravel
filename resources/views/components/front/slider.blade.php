@@ -13,7 +13,7 @@ $controller = new \App\Http\Controllers\Controller();
 
                 @foreach ($all as $post)
 
-                <div class="single_iteam" > <a href="{{ route('singlePost', ['id' =>$post->id ]) }}">
+                <div class="single_iteam" > <a href="{{ route('singlePost', ['postID' =>$post->id ]) }}">
 
 
 

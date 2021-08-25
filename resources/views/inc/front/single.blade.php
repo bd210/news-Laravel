@@ -1,7 +1,7 @@
 
 @isset($single)
 
-    <?php
+<?php
 $postID = $single->id;
 $countLikes = count($single['likes']);
 
@@ -15,11 +15,11 @@ $controller = new \App\Http\Controllers\Controller();
 
 foreach ($single['likes'] as $like) {
 
-    array_push($userIdArray,$like['pivot']->user_id);
+     array_push($userIdArray,$like['pivot']->user_id);
 }
 
-
 ?>
+
 <h1>{{ $single->title }}</h1>
 
 <div class="post_commentbox">
@@ -105,7 +105,7 @@ foreach ($single['likes'] as $like) {
         @endforeach
 
     @else
-        {{ "NO TAGS" }}
+       <p> {{ "NO TAGS" }} </p>
     @endif
 
     @if (!auth()->check())
@@ -113,19 +113,22 @@ foreach ($single['likes'] as $like) {
     <a href="{{ route('login') }}"><h3> Like <i class="fa fa-thumbs-o-up"></i> {{ $countLikes > 0 ?  " ( ". $countLikes . " ) "   : "No likes yet" }} </h3></a>
 
 
-    @elseif (auth()->check() &&  in_array(auth()->user()->id , $userIdArray))
+    @elseif (auth()->check() &&  in_array( auth()->user()->id , $userIdArray))
 
 
 
-    <form action="{{ route('unlikePost' , [ 'postID' => $postID]) }}" method="POST">
+    <form action="{{ route('unlikePost',['postID' => $postID]) }}" method="POST">
         @CSRF
         @method('DELETE')
         <button class=" btn-danger"><h3> Unlike <i class="fa fa-thumbs-o-up"></i>{{ " " . $countLikes  }} </h3> </button>
     </form>
 
     @else
-    <a href="{{ route('likePost' , [ 'postID' => $postID]) }}"><h3> Like <i class="fa fa-thumbs-o-up"></i>{{ $countLikes > 0 ? "(". $countLikes . ")" : " ( No likes yet ) "}} </h3></a>
 
+    <form action="{{ route('likePost',['postID' => $postID]) }}" method="POST">
+        @CSRF
+         <button class=" btn-danger"><h3> Like <i class="fa fa-thumbs-o-up"></i>{{ $countLikes > 0 ? "(". $countLikes . ")" : " ( No likes yet ) "}} </h3> </button>
+   </form>
     @endif
 
 
@@ -134,7 +137,7 @@ foreach ($single['likes'] as $like) {
     <br/>
     <h4>Leave commment</h4>
 
-    <form action="{{ (session()->has('comment')) ? route('frontUpdateComment', ['commentID' => session()->get('comment')->id , 'postID' => $postID ]) : route('storeComment', ['id' => $postID] ) }}" method="POST" class="contact_form">
+    <form action="{{ (session()->has('comment')) ? route('frontUpdateComment', ['commentID' => session()->get('comment')->id , 'postID' => $postID ]) : route('storeComment', ['postID' => $postID] ) }}" method="POST" class="contact_form">
         @csrf
         @if(session()->has('comment'))
             @method('PUT')

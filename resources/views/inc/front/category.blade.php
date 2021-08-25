@@ -14,7 +14,7 @@ $controller = new \App\Http\Controllers\Controller();
         @foreach ($category as $cat)
 
         <li>
-            <div class="media wow fadeInDown"> <a href="{{ route('singlePost', ['id' => $cat->id ]) }}" class="media-left">
+            <div class="media wow fadeInDown"> <a href="{{ route('singlePost', ['postID' => $cat->id ]) }}" class="media-left">
 
 
 
@@ -32,7 +32,7 @@ $controller = new \App\Http\Controllers\Controller();
 
                 </a>
 
-                <div class="media-body"> <a href="{{ route('singlePost', ['id' => $cat->id ]) }}" class="catg_title">
+                <div class="media-body"> <a href="{{ route('singlePost', ['postID' => $cat->id ]) }}" class="catg_title">
                         {{ $cat->title }}</a> </div>
             </div>
         </li>

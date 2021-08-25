@@ -5,7 +5,6 @@ namespace App\Http\Controllers\front;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Comment;
-use App\Models\Permission;
 use App\Models\Post;
 use App\Models\Visit;
 use Illuminate\Database\QueryException;
@@ -92,9 +91,9 @@ class FrontendController extends Controller
 
 
 
-    public function single($id)
+    public function single(Post $postID)
     {
-        if ($id) {
+        if ($postID) {
 
             try {
 
@@ -103,19 +102,19 @@ class FrontendController extends Controller
                 $visit = new Visit();
 
 
-                $this->data['single'] = $post::with("categories","files", "tags", "author", "approved", "edited", "likes")
-                    ->where('posts.id', $id)
+                $this->data['single'] = $post::with([ "categories","files", "tags", "author", "approved", "edited", "likes" ])
+                    ->where('posts.id', $postID->id)
                     ->where('approved_by', '!=', null)
                     ->first();
 
 
                 $this->data['comments'] = $comment::all()
                     ->where('approved_comm',true)
-                    ->where('post_id', $id);
+                    ->where('post_id', $postID->id);
 
 
                 $this->data['hits'] = $visit::with('posts')
-                    ->where('post_id' ,$id)
+                    ->where('post_id' , $postID->id)
                     ->groupBy('post_id')
                     ->orderBy('post_id')
                     ->count('post_id');
@@ -123,7 +122,7 @@ class FrontendController extends Controller
 
                 $visit->visited_at = date("Y-m-d H:i:s");
                 $visit->ip = $_SERVER['REMOTE_ADDR'];
-                $visit->post_id = $id;
+                $visit->post_id = $postID->id;
 
                 $visit->save();
 
@@ -152,19 +151,17 @@ class FrontendController extends Controller
 
 
 
-    public function category($id)
+    public function category(Category $cat)
     {
 
-        if ($id)
+        if ($cat)
         {
 
             $post = new Post();
-            $categoryId = $id;
-
 
             $this->data['category'] = $post::with("categories")
                 ->where('approved_by', '!=', null)
-                ->where('category_id','=', $categoryId)
+                ->where('category_id','=', $cat->id)
                 ->get();
 
 

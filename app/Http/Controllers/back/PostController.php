@@ -5,13 +5,11 @@ namespace App\Http\Controllers\back;
 use App\Http\Requests\Files\FileUpdateRequest;
 use App\Http\Requests\Posts\PostCreateRequest;
 use App\Http\Requests\Posts\PostUpdateRequest;
-use App\Models\Category;
 use App\Models\File;
-use App\Models\Like;
 use App\Models\Post;
-use App\Models\PostFile;
-use App\Models\PostTag;
-use App\Models\Tag;
+use App\Repositories\CategoryRespository;
+use App\Repositories\PostRepository;
+use App\Repositories\TagRepository;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
@@ -19,20 +17,24 @@ use Symfony\Component\HttpFoundation\File\Exception\FileException;
 class PostController extends BackendController
 {
 
+    protected $post;
+    protected $tag;
+    protected $category;
+
+    public function __construct(PostRepository $post, TagRepository $tag, CategoryRespository $category)
+    {
+        $this->post = $post;
+        $this->tag = $tag;
+        $this->category = $category;
+    }
+
+
     public function index()
     {
 
-        $post = new Post();
+        $this->data['posts'] = $this->post->all();
 
-        $per_page = isset($_GET['per_page']) ? $_GET['per_page'] : 10;
-
-        $this->data['posts'] = $post::with('categories', 'author', 'edited', 'files', 'approved')
-            ->where('approved_by', '!=', null)
-            ->orderBy('created_at', 'DESC')
-            ->paginate($per_page);
-
-
-       $this->data['firstImg'] = $this->returnFirstImg($this->data['posts']);
+        $this->data['firstImg'] = $this->returnFirstImg($this->data['posts']);
 
 
         return view('pages.back.posts.all_posts', $this->data);
@@ -44,11 +46,8 @@ class PostController extends BackendController
     public function create()
     {
 
-        $tag = new Tag();
-        $category = new Category();
-
-        $this->data['tags'] = $tag::all();
-        $this->data['categories'] = $category::all();
+        $this->data['tags'] = $this->tag->all();
+        $this->data['categories'] = $this->category->all();
         $this->data['post'] = new Post();
 
         return view('pages.back.posts.create', $this->data);
@@ -64,48 +63,11 @@ class PostController extends BackendController
 
             try {
 
+               $result = $this->post->store($request->validated());
 
-                $postFile = new PostFile();
-                $postTag = new PostTag();
-                $fileModel = new File();
-
-
-                $tags = $request->input('tag_id');
-                $file = $request->file('file');
-
-                $this->upload($file);
-
-                $post = Post::create($request->validated());
-
-
-                foreach ($file as $src) {
-
-                    $fileInsert = $fileModel::query()
-                        ->insertGetId([
-                            'file_name' => time() . "_" . $src->getClientOriginalName()
-                        ]);
-
-                    $postFile::query()->insert([
-                        'file_id' => $fileInsert,
-                        'post_id' => $post->id
-                    ]);
-
-                }
-
-
-                if (isset($tags)) {
-
-                    foreach ($tags as $tag) {
-
-                        $postTag::query()->insert([
-                            'post_id' => $post->id,
-                            'tag_id' => $tag
-                        ]);
-                    }
-
-                }
-
-                return redirect(route('pendingPosts'));
+                return ($result)
+                    ? redirect()->route('allPosts')
+                    : $this->return500();
 
 
             } catch (QueryException $e) {
@@ -134,35 +96,17 @@ class PostController extends BackendController
 
 
 
-    public function edit($id)
+    public function edit(Post $postID)
     {
-        if ($id) {
+        if ($postID) {
 
-            $post = new Post();
-            $like = new Like();
-            $category = new Category();
-            $tag = new Tag();
+            $this->data['categories'] = $this->category->all();
+            $this->data['tags'] = $this->tag->all();
 
-
-            $this->data['categories'] = $category::all();
-            $this->data['tags'] = $tag::all();
-
-            $this->data['likes'] = $like::query()
-                ->where('post_id', $id)
-                ->groupBy('post_id')
-                ->orderBy('post_id')
-                ->count('post_id');
-
-
-            $this->data['post'] = $post::with('categories', 'files', 'tags')
-                ->where('id', $id)
-                ->firstOrFail();
-
-
+            $this->data['likes'] = $this->post->getCountPostLikes($postID->id);
+            $result = $this->data['post'] = $this->post->getAllPostsForEdit($postID->id);
             $this->data['firstImg'] = $this->returnFirstImg($this->data['post']['files']);
 
-
-            $result = $this->data['post'];
 
             return ($result)
                 ? view('pages.back.posts.update', $this->data)
@@ -176,76 +120,16 @@ class PostController extends BackendController
     }
 
 
-    public function update(PostUpdateRequest $request, FileUpdateRequest $requestFile, $id)
+    public function update(Post $postID, PostUpdateRequest $request, FileUpdateRequest $requestFile)
     {
-        if ($request->exists('btnUpdatePost')) {
 
             try {
 
-                $file = new File();
-                $filePost = new PostFile();
-                $tagPost = new PostTag();
-
-                $files = $requestFile->file('file_name');
-                $tag = $request->input('tag');
-                $title = $request->input('title');
-
-
-                $post = Post::find($id);
-
-
-                $post->title = ($post->title != $title)
-                    ? $post->title = $title
-                    : $request->input('title');
-
-
-                $post->content = $request->input('content');
-                $post->category_id = $request->input('category_id');
-                $post->edited_by = auth()->user()->id;
-
-                $result = $post->save();
-
-
-                if ($requestFile->hasFile('file_name')) {
-
-                    $this->upload($files);
-
-                    foreach ($files as $src) {
-
-                      $file_insert_id  = $file::query()->insertGetId([
-                            'file_name' => time() . "_" . $src->getClientOriginalName()
-                        ]);
-
-                        $filePost::query()->insert([
-                            'post_id' => $id,
-                            'file_id' => $file_insert_id
-                        ]);
-
-
-                    }
-                }
-
-                if (isset($tag)) {
-
-                    $tagPost::query()
-                        ->where('post_id', $id)
-                        ->delete();
-
-                    foreach ($tag as $t) {
-
-                        $tagPost::query()->insert([
-                            'post_id' => $id,
-                            'tag_id' => $t
-                        ]);
-                    }
-
-                }
-
+                $result = $this->post->update($postID->id, $request, $requestFile);
 
                 return ($result)
                     ? redirect()->route('allPosts')->with('success', 'YOU HAVE SUCCESSFULLY UPDATED POST')
                     : redirect()->back()->withInput();
-
 
 
 
@@ -266,48 +150,17 @@ class PostController extends BackendController
                 return  $this->return500();
             }
 
-        } else {
 
-            return $this->return403();
-
-        }
     }
 
 
-    public function destroy($id)
+    public function destroy(Post $postID)
     {
         try {
 
-            if ($id){
+            if ($postID){
 
-                $post = new Post();
-                $postFile = new PostFile();
-                $file = new File();
-
-
-                $postFiles = $postFile::query()
-                    ->where('post_id', $id)
-                    ->get();
-
-                $result = $post::query()
-                    ->where('id', $id)
-                    ->delete();
-
-
-                if (count($postFiles) > 0) {
-
-                    foreach ($postFiles as $postId) {
-
-                        $files = $file::query()
-                            ->where('id', $postId->file_id)
-                            ->firstOrFail();
-
-                        unlink('assets/upload/' . $files->file_name);
-
-                    }
-
-                }
-
+                $result = $this->post->destroy($postID->id);
 
                 return ($result)
                     ? redirect(route('allPosts'))->with('success', 'YOU HAVE SUCCESSFULLY DELETED NEWS')
@@ -333,12 +186,7 @@ class PostController extends BackendController
     public function pending()
     {
 
-        $post = new Post();
-
-        $this->data['pending'] = $post::with('categories', 'files', 'author')
-            ->where('approved_by', '=', null)
-            ->orderBy('created_at', 'ASC')
-            ->get();
+        $this->data['pending'] = $this->post->pending();
 
         return view('pages.back.posts.pending', $this->data);
 
@@ -347,18 +195,14 @@ class PostController extends BackendController
 
 
 
-    public function approve($id)
+    public function approve(Post $postID)
     {
 
         try {
 
-            if ($id) {
+            if ($postID) {
 
-                $post = Post::find($id);
-
-                $post->approved_by = auth()->user()->id;
-
-                $result = $post->save();
+                $result =$this->post->approve($postID->id);
 
                 return ($result)
                     ? redirect()->route('allPosts')->with('success', 'YOU HAVE SUCCESSFULLY APPROVED POST')
@@ -381,26 +225,14 @@ class PostController extends BackendController
     }
 
 
-    public function destroyFile($postID, $fileID)
+    public function destroyFile(Post $postID, File $fileID)
     {
 
         try {
 
             if ($postID && $fileID){
 
-                $postFile = new PostFile();
-
-                $fileDelete = File::find($fileID);
-
-
-                $result = $postFile::query()
-                    ->where('post_id', $postID)
-                    ->where('file_id', $fileID)
-                    ->delete();
-
-                unlink('assets/upload/' . $fileDelete->file_name);
-
-
+               $result = $this->post->destroyFile($postID->id, $fileID->id);
 
                 return ($result)
                     ? redirect()->back()

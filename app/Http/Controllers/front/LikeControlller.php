@@ -3,28 +3,34 @@
 namespace App\Http\Controllers\front;
 
 use App\Http\Controllers\Controller;
-use App\Models\Like;
+use App\Models\Post;
+use App\Repositories\LikeRepository;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Log;
 
 class LikeControlller extends Controller
 {
 
-    public function like($postID)
+    protected $like;
+
+    public function __construct(LikeRepository $like)
+    {
+        $this->like = $like;
+    }
+
+
+    public function like(Post $postID)
     {
 
         if ($postID) {
 
             try {
 
-                $like = new Like();
+                $result = $this->like->like($postID->id);
 
-                $like->post_id = $postID;
-                $like->user_id = auth()->user()->id;
-
-                $like->save();
-
-                return redirect()->back();
+                return ($result)
+                    ? redirect()->back()
+                    : $this->return500();
 
 
             } catch (QueryException $e) {
@@ -49,24 +55,19 @@ class LikeControlller extends Controller
 
 
 
-    public function unlike($postID)
+    public function unlike(Post $postID)
     {
+
 
         if ($postID) {
 
             try {
 
-                $like = new Like();
+                $result = $this->like->unlike($postID->id);
 
-                $like::query()
-                    ->where([
-                        'post_id' => $postID,
-                        'user_id' => auth()->user()->id
-                    ])
-                    ->delete();
-
-                return redirect()->back();
-
+                return ($result)
+                    ? redirect()->back()
+                    : $this->return500();
 
             } catch (QueryException $e) {
 

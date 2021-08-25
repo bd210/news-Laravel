@@ -37,13 +37,13 @@ $number = 1;
         </td>
         <td> {{ $word->word }}</td>
 
-        <td>  <a href="{{ route('editForbiddenWord', ['id' => $word->id ]) }}"><i class="fas fa-edit"></i>  </a></td>
+        <td>  <a href="{{ route('editForbiddenWord', ['bw' => $word->id ]) }}"><i class="fas fa-edit"></i>  </a></td>
 
 
 
         <td>
             @can('delete', $word)
-            <form action="{{ route('deleteForbiddenWord', ['id' => $word->id ]) }}" method="POST">
+            <form action="{{ route('deleteForbiddenWord', ['bw' => $word->id ]) }}" method="POST">
                 @CSRF
                 @method('DELETE')
 

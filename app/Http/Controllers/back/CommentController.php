@@ -3,18 +3,26 @@
 namespace App\Http\Controllers\back;
 
 use App\Models\Comment;
+use App\Repositories\CommentRepository;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Log;
 
 class CommentController extends BackendController
 {
 
+
+    protected $comment;
+
+    public function __construct(CommentRepository $comment)
+    {
+        $this->comment = $comment;
+    }
+
+
     public function index()
     {
 
-        $comment = new Comment();
-
-        $this->data['comments'] = $comment::all();
+        $this->data['comments'] = $this->comment->all();
 
         return view('pages.back.comments.all_comments', $this->data);
 
@@ -23,17 +31,13 @@ class CommentController extends BackendController
 
 
 
-    public function destroy($id)
+    public function destroy(Comment $com)
     {
         try {
 
-            if ($id){
+            if ($com){
 
-                $comment = new Comment();
-
-                $result = $comment::query()
-                    ->where('id', $id)
-                    ->delete();
+                $result = $this->comment->destroy($com->id);
 
 
                 return ($result)

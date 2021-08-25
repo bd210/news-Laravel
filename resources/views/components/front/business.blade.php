@@ -9,7 +9,7 @@ $controller = new \App\Http\Controllers\Controller();
     <div class="single_post_content_left">
         <ul class="business_catgnav  wow fadeInDown">
             <li>
-                <figure class="bsbig_fig"> <a href="{{ route('singlePost', ['id' => $business[0]->id ]) }} " class="featured_img">
+                <figure class="bsbig_fig"> <a href="{{ route('singlePost', ['postID' => $business[0]->id ]) }} " class="featured_img">
 
 
 
@@ -25,7 +25,7 @@ $controller = new \App\Http\Controllers\Controller();
 
 
                         <span class="overlay"></span> </a>
-                    <figcaption> <a href="{{ route('singlePost', ['id' => $business[0]->id ]) }}"> {{   $business[0]->title  }}</a> </figcaption>
+                    <figcaption> <a href="{{ route('singlePost', ['postID' => $business[0]->id ]) }}"> {{   $business[0]->title  }}</a> </figcaption>
                     <p> {{  $business[0]->content  }} </p>
                 </figure>
             </li>
@@ -38,7 +38,7 @@ $controller = new \App\Http\Controllers\Controller();
             @for ($i = 1; $i <= $count; $i++)
 
             <li>
-                <div class="media wow fadeInDown"> <a href="{{ route('singlePost', ['id' => $business[$i]->id ]) }}" class="media-left">
+                <div class="media wow fadeInDown"> <a href="{{ route('singlePost', ['postID' => $business[$i]->id ]) }}" class="media-left">
 
 
                         @if($controller->returnFirstImg($business[$i]['files']))
@@ -52,7 +52,7 @@ $controller = new \App\Http\Controllers\Controller();
                        @endif
 
                     </a>
-                    <div class="media-body"> <a href="{{ route('singlePost', ['id' => $business[$i]->id ]) }}" class="catg_title"> {{ $business[$i]->title }}  </a> </div>
+                    <div class="media-body"> <a href="{{ route('singlePost', ['postID' => $business[$i]->id ]) }}" class="catg_title"> {{ $business[$i]->title }}  </a> </div>
                 </div>
             </li>
 

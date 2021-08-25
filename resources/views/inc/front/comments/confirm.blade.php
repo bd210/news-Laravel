@@ -11,7 +11,7 @@
 
 <h1>Confirm your comment</h1>
 
-<form action="{{ route('confirmComment', ['id' => $commentConfirm->id , 'selector' => $selector ]) }}" method="POST">
+<form action="{{ route('confirmComment', ['commentID' => $commentConfirm->id , 'selector' => $selector ]) }}" method="POST">
     @csrf
     <input type="submit" value="Confirm" class="btn-theme" name="submitCommentVerify">
 

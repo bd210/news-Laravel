@@ -45,9 +45,9 @@ $controller  =  new \App\Http\Controllers\Controller();
 
 
 
-            @if ($controller->returnFirstImg($post['files']) )
+            @if ($controller->returnFirstImg($post->files) )
 
-                  <img src="{{ asset('/assets/upload/'. $controller->returnFirstImg($post['files'])) }}" alt="post picture" style="height: 50px;width: 50px;" />
+                  <img src="{{ asset('/assets/upload/'. $controller->returnFirstImg($post->files)) }}" alt="post picture" style="height: 50px;width: 50px;" />
 
             @else
 
@@ -59,13 +59,13 @@ $controller  =  new \App\Http\Controllers\Controller();
 
         </td>
         <td> {{ substr($post->title, 0, 8). "..." }} </td>
-        <td> <a href="{{ route('editUser',['id' => $post['author']->id ]) }}"> {{ $post['author']->first_name . " " . $post['author']->last_name }} </a></td>
+        <td> <a href="{{ route('editUser',['userID' => $post->author->id ]) }}"> {{ $post->author->first_name . " " . $post->author->last_name }} </a></td>
         <td> {{ $post['categories']->category_name }}</td>
         <td>
 
             @can('approve', $post)
 
-                <form action="{{ route('approvePost', ['id' => $post->id ]) }}" method="POST">
+                <form action="{{ route('approvePost', ['postID' => $post->id ]) }}" method="POST">
                     @CSRF
                     @method('PATCH')
 
@@ -76,7 +76,7 @@ $controller  =  new \App\Http\Controllers\Controller();
         </td>
         <td>
             @can('delete', $post)
-            <form action="{{ route('deletePost', ['id' => $post->id ]) }}" method="POST">
+            <form action="{{ route('deletePost', ['postID' => $post->id ]) }}" method="POST">
                 @CSRF
                 @method('DELETE')
 
@@ -86,7 +86,7 @@ $controller  =  new \App\Http\Controllers\Controller();
             @endcan
 
         </td>
-        <td>  <a href="{{ route('editPost', ['id' => $post->id ]) }}"><i class="fas fa-eye"> </i> </a> </td>
+        <td>  <a href="{{ route('editPost', ['postID' => $post->id ]) }}"><i class="fas fa-eye"> </i> </a> </td>
 
     </tr>
     @endforeach

@@ -11,7 +11,7 @@
 
                 @foreach ($categories as $cat)
 
-                <li class="cat-item"><a href="{{ route('singleCategory', ['id' => $cat->id ]) }}"> {{ $cat->category_name }}</a></li>
+                <li class="cat-item"><a href="{{ route('singleCategory', ['cat' => $cat->id ]) }}"> {{ $cat->category_name }}</a></li>
 
 
                 @endforeach

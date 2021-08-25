@@ -5,20 +5,24 @@ namespace App\Http\Controllers\back;
 use App\Http\Requests\Tags\TagCreateRequest;
 use App\Http\Requests\Tags\TagUpdateRequest;
 use App\Models\Tag;
+use App\Repositories\TagRepository;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Log;
 
 class TagController extends BackendController
 {
 
+    protected $tag;
+
+    public function __construct(TagRepository $tag)
+    {
+        $this->tag = $tag;
+    }
+
     public function index()
     {
 
-        $tag = new Tag();
-
-        $this->data['tags'] = $tag::query()
-            ->orderBy('created_at', 'DESC')
-            ->get();
+        $this->data['tags'] = $this->tag->all();
 
         return view('pages.back.tags.all_tags', $this->data);
 
@@ -44,7 +48,7 @@ class TagController extends BackendController
 
             try {
 
-                $result = Tag::create($request->all());
+                $result = $this->tag->store($request->validated());
 
                 return ($result)
                     ? redirect()->route('allTags')->with('success', 'YOU HAVE SUCCESSFULLY CREATED TAG')
@@ -71,18 +75,11 @@ class TagController extends BackendController
 
 
 
-    public function edit($id)
+    public function edit(Tag $tagID)
     {
-        if ($id) {
+        if ($tagID) {
 
-            $tag = new Tag();
-
-            $this->data['tag'] = $tag::query()
-                ->where('id', $id)
-                ->firstOrFail();
-
-            $result = $this->data['tag'];
-
+            $result = $this->data['tag'] = $this->tag->getById($tagID->id);
 
             return ($result)
                 ? view('pages.back.tags.update', $this->data)
@@ -99,18 +96,13 @@ class TagController extends BackendController
 
 
 
-    public function update(TagUpdateRequest $request, $id)
+    public function update(TagUpdateRequest $request, Tag $tagID)
     {
         if ($request->exists('btnUpdateTag')) {
 
             try {
 
-                $tag = Tag::find($id);
-
-                $tag->keyword = $request->input('tag');
-
-                $result = $tag->save();
-
+                $result = $this->tag->update($tagID->id, $request);
 
                 return ($result)
                     ? redirect()->route('allTags')->with('success', 'YOU HAVE SUCCESSFULLY UPDATED TAG')
@@ -135,18 +127,13 @@ class TagController extends BackendController
 
 
 
-    public function destroy($id)
+    public function destroy(Tag $tagID)
     {
         try {
 
-            if ($id){
+            if ($tagID){
 
-                $tag = new Tag();
-
-                $result = $tag::query()
-                    ->where('id', $id)
-                    ->delete();
-
+                $result = $this->tag->destroy($tagID->id);
 
                 return ($result)
                     ? redirect(route('allTags'))->with('success', 'YOU HAVE SUCCESSFULLY DELETED TAG')

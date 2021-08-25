@@ -14,7 +14,7 @@ $controller = new \App\Http\Controllers\Controller();
 
         @foreach ($popular as $popular)
         <li>
-            <div class="media wow fadeInDown"> <a href="{{ route('singlePost', ['id' =>$popular->id ]) }}" class="media-left">
+            <div class="media wow fadeInDown"> <a href="{{ route('singlePost', ['postID' =>$popular->id ]) }}" class="media-left">
 
 
                         @if($controller->returnFirstImg($popular['files']))

@@ -35,12 +35,12 @@ $number = 1;
             @endif
         </td>
         <td> {{ $role->role_name }}</td>
-        <td>  <a href="{{ route('editRole', ['id' => $role->id]) }}"><i class="fas fa-edit"></i>  </a></td>
+        <td>  <a href="{{ route('editRole', ['roleID' => $role->id]) }}"><i class="fas fa-edit"></i>  </a></td>
 
 
         <td>
             @can('delete', $role)
-            <form action="{{ route('deleteRole', ['id' => $role->id]) }}" method="POST">
+            <form action="{{ route('deleteRole', ['roleID' => $role->id]) }}" method="POST">
                 @CSRF
                 @method('DELETE')
 

@@ -4,5 +4,5 @@
 
 <p> Expiration time for verification : {{ date("F j, Y H:i", strtotime( $data['expired'] )) }}</p>
 
-<p> URL : <a href="{{ route('confirmCommentView', ['id' => $data['id']]) }}?selector={{ $data['selector'] }}">Confirm</a> </p>
+<p> URL : <a href="{{ route('confirmCommentView', ['commentID' => $data['id']]) }}?selector={{ $data['selector'] }}">Confirm</a> </p>
 @endcomponent

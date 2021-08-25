@@ -44,17 +44,17 @@ $number = 1;
             @endif
 
         </td>
-        <td><a href="{{ route('editUser',['id' => $user->id ]) }}"> {{ $user->first_name . " " . $user->last_name }}  </a> </td>
+        <td><a href="{{ route('editUser',['userID' => $user->id ]) }}"> {{ $user->first_name . " " . $user->last_name }}  </a> </td>
         <td> {{ $user->email }}</td>
         <td> {{ $user['roles']->role_name }}</td>
         <td>
 
-            <a href="{{ route('editUser', ['id' => $user->id ]) }}"><i class="fas fa-edit"></i>  </a></td>
+            <a href="{{ route('editUser', ['userID' => $user->id ]) }}"><i class="fas fa-edit"></i>  </a></td>
 
         <td>
 
             @can('delete', $user)
-            <form action="{{ route('deleteUser', ['id' => $user->id]) }}" method="POST">
+            <form action="{{ route('deleteUser', ['userID' => $user->id]) }}" method="POST">
                 @CSRF
                 @method('DELETE')
 

@@ -31,7 +31,7 @@ $postID = $post->id;
 
                     <h3>Author : </h3>
                 </div>
-                <h3><a href="{{ route('editUser',['id' => $post['author']->id ]) }}">{{ $post['author']->first_name . " " . $post['author']->last_name }}</a></h3>
+                <h3><a href="{{ route('editUser',['userID' => $post->author->id ]) }}">{{ $post->author->first_name . " " . $post->author->last_name }}</a></h3>
 
             </div>
             @if (isset($likes) && $likes > 0 )
@@ -50,7 +50,7 @@ $postID = $post->id;
     <div class="col-lg-8 col-xlg-9 col-md-12">
         <div class="card">
             <div class="card-body">
-                <form action="{{ route('updatePost', ['id' => $post->id]) }}" method="POST" class="form-horizontal form-material" enctype="multipart/form-data">
+                <form action="{{ route('updatePost', ['postID' => $post->id]) }}" method="POST" class="form-horizontal form-material" enctype="multipart/form-data">
                   @csrf
                     @method('PUT')
                     <div class="form-group mb-4">
@@ -77,11 +77,11 @@ $postID = $post->id;
 
                         <div class="form-group mb-4">
 
-                            @isset($post['tags'])
+                            @isset($post->tags)
 
                                 {{ "Current tags : " }}
 
-                                @foreach ($post['tags'] as $tag)
+                                @foreach ($post->tags as $tag)
 
                                      <li>{{ $tag->keyword }} </li>
                                 @endforeach
@@ -118,7 +118,7 @@ $postID = $post->id;
 
                             <div class="col-sm-12 border-bottom">
                                 <select class="form-select shadow-none p-0 border-0 form-control-line" name="category_id">
-                                    <option value="{{ $post['categories']->id }}">{{ $post['categories']->category_name }}</option>
+                                    <option value="{{ $post->categories->id }}">{{ $post->categories->category_name }}</option>
 
                                     @isset($categories)
 
@@ -163,9 +163,9 @@ $postID = $post->id;
 
 
 
-                        @isset($post['files'][0])
+                        @isset($post->files[0])
 
-                            @foreach ($post['files'] as $file)
+                            @foreach ($post->files as $file)
 
                             <?php    $ext = pathinfo($file->file_name, PATHINFO_EXTENSION); ?>
 

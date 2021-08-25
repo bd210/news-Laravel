@@ -5,19 +5,25 @@ namespace App\Http\Controllers\back;
 use App\Http\Requests\BadWords\BadWordCreateRequest;
 use App\Http\Requests\BadWords\BadWordUpdateRequest;
 use App\Models\BadWord;
+use App\Repositories\BadWordRepository;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Log;
 
 class BadWordController extends BackendController
 {
 
+    protected $word;
+
+    public function __construct(BadWordRepository $word)
+    {
+        $this->word = $word;
+    }
+
+
     public function index()
     {
-        $word = new BadWord();
 
-        $this->data['words'] = $word::query()
-            ->orderBy('created_at', 'DESC')
-            ->get();
+        $this->data['words'] = $this->word->all();
 
         return view('pages.back.bad_words.all_bad_words', $this->data);
 
@@ -40,7 +46,7 @@ class BadWordController extends BackendController
 
             try {
 
-                $result = BadWord::create($request->all());
+                $result = $this->word->store($request->validated());
 
                 return ($result)
                     ? redirect()->route('allForbiddenWords')->with('success', 'YOU HAVE SUCCESSFULLY CREATED FORBIDDEN WORD')
@@ -68,19 +74,18 @@ class BadWordController extends BackendController
 
 
 
-    public function edit($id)
+    public function edit(BadWord $bw)
     {
-        if ($id) {
 
-            $word = new BadWord();
-            $wordId = $id;
-
-            $result = $this->data['oneWord'] = $word::query()
-                ->where('id', $wordId)
-                ->firstOrFail();
+        if ($bw->id) {
 
 
-            return ($result) ? view('pages.back.bad_words.update', $this->data) : $this->return500();
+            $result = $this->data['oneWord'] = $this->word->getById($bw->id);
+
+
+            return ($result)
+                ? view('pages.back.bad_words.update', $this->data)
+                : $this->return500();
 
 
         } else {
@@ -92,17 +97,15 @@ class BadWordController extends BackendController
     }
 
 
-    public function update(BadWordUpdateRequest $request, $id)
+    public function update(BadWordUpdateRequest $request, BadWord $bw)
     {
         if ($request->exists('btnUpdateBadWord')) {
 
             try {
 
-                $bad_word = BadWord::find($id);
 
-                $bad_word->word = $request->input('word');
+                $result = $this->word->update($bw->id, $request);
 
-                $result = $bad_word->save();
 
                 return ($result)
                     ? redirect()->route('allForbiddenWords')->with('success', 'YOU HAVE SUCCESSFULLY UPDATED FORBIDDEN WORD')
@@ -126,17 +129,15 @@ class BadWordController extends BackendController
     }
 
 
-    public function destroy($id)
+    public function destroy(BadWord $bw)
     {
+
         try {
 
-            if ($id){
+            if ($bw){
 
-                $word = new BadWord();
 
-                $result = $word::query()
-                    ->where('id', $id)
-                    ->delete();
+                $result = $this->word->destroy($bw->id);
 
 
                 return ($result)

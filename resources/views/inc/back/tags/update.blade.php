@@ -6,7 +6,7 @@
     <div class="card">
         <div class="card-body">
 
-            <form action=" {{ route('updateTag', ['id' => $tag->id ]) }}" method="POST" class="form-horizontal form-material">
+            <form action=" {{ route('updateTag', ['tagID' => $tag->id ]) }}" method="POST" class="form-horizontal form-material">
             @csrf
                 @method('PUT')
                 <div class="form-group mb-4">

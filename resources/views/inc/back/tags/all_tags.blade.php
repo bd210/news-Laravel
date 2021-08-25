@@ -36,14 +36,14 @@ $number = 1;
         <td> {{ $tag->keyword }}</td>
         <td>
 
-            <a href="{{ route('editTag', ['id' => $tag->id]) }}"><i class="fas fa-edit"></i>  </a>
+            <a href="{{ route('editTag', ['tagID' => $tag->id]) }}"><i class="fas fa-edit"></i>  </a>
 
         </td>
 
 
         <td>
             @can('delete', $tag)
-            <form action="{{ route('deleteTag', ['id' => $tag->id]) }}" method="POST">
+            <form action="{{ route('deleteTag', ['tagID' => $tag->id]) }}" method="POST">
                 @CSRF
                 @method('DELETE')
 

@@ -7,6 +7,7 @@ use App\Http\Requests\Comments\CommentUpdateRequest;
 use App\Mail\VerificationComment;
 use App\Models\BadWord;
 use App\Models\Comment;
+use App\Models\Post;
 use App\Models\VerifyComment;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
@@ -18,7 +19,7 @@ class CommentController extends FrontendController
 {
 
 
-    public function store(CommentCreateRequest $request, $id)
+    public function store(CommentCreateRequest $request, Post $postID)
     {
         try {
 
@@ -44,7 +45,7 @@ class CommentController extends FrontendController
                 $comment->content = $this->badWord($badWordsArray, $content);
 
                 $comment->created_at = date('Y-m-d H:i:s');
-                $comment->post_id = $id;
+                $comment->post_id = $postID->id;
 
                 $result = $comment->save();
 
@@ -102,7 +103,7 @@ class CommentController extends FrontendController
     }
 
 
-    public function edit($commentID, $postID)
+    public function edit(Comment $commentID, Post $postID)
     {
 
         if ($commentID && $postID) {
@@ -111,12 +112,12 @@ class CommentController extends FrontendController
 
 
             $this->data['comment'] = $comment::query()
-                ->where('id', $commentID)
+                ->where('id', $commentID->id)
                 ->first();
 
             session()->put('comment', $this->data['comment']);
 
-            return  redirect()->route('singlePost', ['id' => $postID]);
+            return  redirect()->route('singlePost', ['postID' => $postID->id]);
 
         } else {
 
@@ -127,7 +128,7 @@ class CommentController extends FrontendController
 
     }
 
-    public function update(CommentUpdateRequest $request, $commentID, $postID)
+    public function update(CommentUpdateRequest $request, Comment $commentID, Post $postID)
     {
 
         if ($commentID && $postID) {
@@ -141,14 +142,14 @@ class CommentController extends FrontendController
 
 
                 $comment::query()
-                    ->where('id', $commentID)
+                    ->where('id', $commentID->id)
                     ->update([
                         'content' => $content,
                         'updated_at' => $date
                     ]);
 
 
-                return  redirect(route('singlePost', ['id' => $postID]));
+                return  redirect(route('singlePost', ['postID' => $postID->id]));
 
 
             } catch (QueryException $e) {
@@ -171,7 +172,7 @@ class CommentController extends FrontendController
     }
 
 
-    public function destroy($commentID, $postID)
+    public function destroy(Comment $commentID, Post $postID)
     {
 
         if ($commentID && $postID) {
@@ -181,10 +182,10 @@ class CommentController extends FrontendController
                 $comment = new Comment();
 
                 $comment::query()
-                    ->where('id', $commentID)
+                    ->where('id', $commentID->id)
                     ->delete();
 
-                return  redirect()->route('singlePost', ['id' => $postID]);
+                return  redirect()->route('singlePost', ['postID' => $postID->id ]);
 
 
             } catch (QueryException $e) {
@@ -206,13 +207,13 @@ class CommentController extends FrontendController
     }
 
 
-    public function confirmCommentView($id)
+    public function confirmCommentView(Comment $commentID)
     {
 
-        if ($id) {
+        if ($commentID) {
 
 
-            $this->data['commentConfirm'] = Comment::find($id);
+            $this->data['commentConfirm'] = Comment::find($commentID->id);
 
 
             return view('pages.front.comments.confirm', $this->data);
@@ -226,12 +227,12 @@ class CommentController extends FrontendController
     }
 
 
-    public function confirm(Request $request, $id, $selector)
+    public function confirm(Request $request, Comment $commentID, $selector)
     {
 
        if ($request->exists('submitCommentVerify')) {
 
-           if ($id && $selector) {
+           if ($commentID && $selector) {
 
             $now = date('Y-m-d H:i:s', time());
 
@@ -249,7 +250,7 @@ class CommentController extends FrontendController
 
                    $comment::query()
                        ->where('email', '=',$vrf->email)
-                       ->where('id', $id)
+                       ->where('id', $commentID->id)
                        ->update(['approved_comm' => 1]);
 
 

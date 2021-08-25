@@ -5,8 +5,8 @@ namespace App\Http\Controllers\back;
 
 use App\Http\Requests\PermissionRole\PermissionRoleUpdateRequest;
 use App\Models\Permission;
-use App\Models\PermissionRole;
 use App\Models\Role;
+use App\Repositories\PermissionRoleRepository;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Log;
 
@@ -14,23 +14,25 @@ use Illuminate\Support\Facades\Log;
 class PermissionRoleController extends BackendController
 {
 
+
+    protected $permissionRole;
+
+    public function __construct( PermissionRoleRepository $permissionRole)
+    {
+
+        $this->permissionRole = $permissionRole;
+    }
+
     public function index($id = null)
     {
 
-        $permission = new Permission();
-        $role = new Role();
-
-        $this->data['permissions'] = $permission::all();
-        $this->data['roles'] = $role::all();
+        $this->data['permissions'] = Permission::all();
+        $this->data['roles'] = Role::all();
         $this->data['pmr'] = new Permission();
 
        if ($id) {
 
-           $this->data['permissionRoles'] = $role::query()
-               ->join('permission_roles', 'permission_roles.role_id', '=', 'roles.id')
-               ->join('permissions', 'permission_id', '=', 'permissions.id')
-               ->where('roles.id', $id)
-               ->get();
+           $this->data['permissionRoles'] = $this->permissionRole->allPermissionForRole($id);
        }
 
         return view('pages.back.permission_roles.all_permission_roles', $this->data);
@@ -38,22 +40,15 @@ class PermissionRoleController extends BackendController
     }
 
 
-    public function show($id)
+    public function show(Role $prID)
     {
-        if ($id) {
+        if ($prID) {
 
-            $permission = new Permission();
-            $role = new Role();
-
-            $this->data['permissions'] = $permission::all();
-            $this->data['roles'] = $role::all();
+            $this->data['permissions'] = Permission::all();
+            $this->data['roles'] = Role::all();
             $this->data['pmr'] = new Permission();
 
-            $this->data['permissionRoles'] = $role::query()
-                ->join('permission_roles', 'permission_roles.role_id', '=', 'roles.id')
-                ->join('permissions', 'permission_id', '=', 'permissions.id')
-                ->where('roles.id', $id)
-                ->get();
+            $this->data['permissionRoles'] = $this->permissionRole->allPermissionForRole($prID->id);
 
 
             return view('pages.back.permission_roles.all_permission_roles', $this->data);
@@ -73,30 +68,12 @@ class PermissionRoleController extends BackendController
 
             if ($request->exists('submitPermissionRole')) {
 
-                $rolePermission = new PermissionRole();
 
+                $result = $this->permissionRole->update($request);
 
-                $roleID = $request->input('role_name');
-                $permissionID = $request->input('chbPermission');
-
-
-                $rolePermission::query()
-                    ->where('role_id', $roleID)
-                    ->delete();
-
-               if (isset($permissionID)) {
-
-                   foreach ($permissionID as $value) {
-
-                       $rolePermission::query()
-                           ->insert([
-                               'role_id' => $roleID ,
-                               'permission_id' => $value,
-                           ]);
-                   }
-               }
-
-                return  redirect()->back();
+                return ($result)
+                    ? redirect()->back()
+                    : $this->return500();
 
 
             } else {

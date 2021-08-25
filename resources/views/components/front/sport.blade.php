@@ -12,7 +12,7 @@ $controller = new \App\Http\Controllers\Controller();
         <h2><span>{{$sport[0]['categories']->category_name}}</span></h2>
         <ul class="business_catgnav wow fadeInDown">
             <li>
-                <figure class="bsbig_fig"> <a href="{{ route('singlePost', ['id' => $sport[0]->id ]) }}" class="featured_img">
+                <figure class="bsbig_fig"> <a href="{{ route('singlePost', ['postID' => $sport[0]->id ]) }}" class="featured_img">
 
 
 
@@ -27,7 +27,7 @@ $controller = new \App\Http\Controllers\Controller();
                         @endif
 
 
-                        <figcaption> <a href="{{ route('singlePost', ['id' => $sport[0]->id ]) }}"> {{$sport[0]->title }} </a> </figcaption>
+                        <figcaption> <a href="{{ route('singlePost', ['postID' => $sport[0]->id ]) }}"> {{$sport[0]->title }} </a> </figcaption>
 
                 </figure>
             </li>
@@ -39,7 +39,7 @@ $controller = new \App\Http\Controllers\Controller();
             @for ($i = 1; $i <= $count; $i++)
 
             <li>
-                <div class="media wow fadeInDown"> <a href="{{ route('singlePost', ['id' => $sport[$i]->id ]) }}" class="media-left">
+                <div class="media wow fadeInDown"> <a href="{{ route('singlePost', ['postID' => $sport[$i]->id ]) }}" class="media-left">
 
 
 
@@ -53,7 +53,7 @@ $controller = new \App\Http\Controllers\Controller();
 
                        @endif
                     </a>
-                    <div class="media-body"> <a href="{{ route('singlePost', ['id' => $sport[$i]->id ]) }}" class="catg_title"> {{ $sport[$i]->title }}</a> </div>
+                    <div class="media-body"> <a href="{{ route('singlePost', ['postID' => $sport[$i]->id ]) }}" class="catg_title"> {{ $sport[$i]->title }}</a> </div>
                 </div>
             </li>
 

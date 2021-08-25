@@ -7,24 +7,26 @@ use App\Http\Requests\Users\UserUpdatePasswordRequest;
 use App\Http\Requests\Users\UserUpdateRequest;
 use App\Models\Role;
 use App\Models\User;
+use App\Repositories\UserRepository;
 use Illuminate\Database\QueryException;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+
 
 class UserController extends BackendController
 {
+
+    protected $user;
+
+    public function __construct(UserRepository $user)
+    {
+        $this->user = $user;
+    }
 
 
     public function index()
     {
 
-        $user = new User();
-
-        $per_page = isset($_GET['per_page']) ? $_GET['per_page'] : 10;
-
-        $this->data['users'] = $user::with('roles')
-            ->orderBy('created_at', 'DESC')
-            ->paginate($per_page);
+        $this->data['users'] = $this->user->all();
 
         return view('pages.back.users.all_users', $this->data);
 
@@ -35,9 +37,7 @@ class UserController extends BackendController
     public function create()
     {
 
-        $role = new Role();
-
-        $this->data['roles'] = $role::all();
+        $this->data['roles'] = Role::all();
         $this->data['user'] = new User();
 
         return view('pages.back.users.create', $this->data);
@@ -51,7 +51,7 @@ class UserController extends BackendController
 
             try {
 
-                $result = User::create($request->validated());
+                $result = $this->user->store($request->validated());
 
 
                 return ($result)
@@ -74,20 +74,13 @@ class UserController extends BackendController
 
 
 
-    public function edit($id)
+    public function edit(User $userID)
     {
-        if ($id) {
+        if ($userID) {
 
-            $user = new User();
-            $role = new Role();
+            $this->data['roles'] = Role::all();
 
-            $this->data['roles'] = $role::all();
-
-             $this->data['user'] = $user::with('roles')
-                ->where('id', $id)
-                ->firstOrFail();
-
-             $result = $this->data['user'];
+            $result = $this->data['user'] = $this->user->getById($userID->id);
 
 
             return ($result)
@@ -104,18 +97,12 @@ class UserController extends BackendController
 
 
 
-    public function update(UserUpdateRequest $request, $id)
+    public function update(UserUpdateRequest $request, User $userID)
     {
         try {
 
-            $user = User::find($id);
 
-            $user->first_name = $request->input('fname');
-            $user->last_name = $request->input('lname');
-            $user->email = $request->input('email');
-            $user->role_id = $request->input('role');
-
-            $result = $user->save();
+            $result = $this->user->update($userID->id, $request);
 
 
             return ($result)
@@ -137,16 +124,13 @@ class UserController extends BackendController
 
 
 
-    public function updatePassword(UserUpdatePasswordRequest $request, $id)
+    public function updatePassword(UserUpdatePasswordRequest $request, User $userID)
     {
 
         try {
 
-                $user = User::find($id);
 
-                $user->password = Hash::make($request->input('pass'));
-
-                $result = $user->save();
+                $result = $this->user->updatePassword($userID->id, $request);
 
                 return ($result)
                     ? redirect()->route('allUsers')->with('success', 'YOU HAVE SUCCESSFULLY UPDATED USER')
@@ -170,17 +154,13 @@ class UserController extends BackendController
 
 
 
-    public function destroy($id)
+    public function destroy(User $userID)
     {
         try {
 
-            if ($id){
+            if ($userID){
 
-               $user = new User();
-
-               $result = $user::query()
-                   ->where('id', $id)
-                   ->delete();
+               $result = $this->user->destroy($userID->id);
 
 
                 return ($result)

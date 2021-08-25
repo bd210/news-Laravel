@@ -6,6 +6,8 @@ $controller = new \App\Http\Controllers\Controller();
 
 ?>
 
+
+
 <h2>News</h2>
 <a href="{{ route('createPostView') }}"> <i class="fas fa-plus"><b>NEW</b></i></a>
 
@@ -32,8 +34,6 @@ $controller = new \App\Http\Controllers\Controller();
     </tr>
 
      @foreach ($posts as $post)
-
-         @can('view', $post)
 
     <tr>
         <td> {{ $number++ }} </td>
@@ -68,26 +68,30 @@ $controller = new \App\Http\Controllers\Controller();
 
         </td>
         <td>  {{ substr($post->title, 0, 8). "..." }} </td>
-        <td> <a href="{{ route('editUser',['id' => $post['author']->id ]) }}">{{ $post['author']->first_name . " " . substr($post['author']->last_name, 0, 1) }} </a></td>
+
+        <td> <a href="{{ route('editUser', ['userID' =>  $post->author_id ]) }}"> {{  optional($post->author)->first_name . " " . substr( optional($post->author)->last_name, 0, 1) }}</a></td>
+
         <td> {{ $post['categories']->category_name }}</td>
-        <td>  <a href="{{ route('editUser',['id' => $post['approved']->id ]) }}"> {{ $post['approved']->first_name  }} </a></td>
+
+        <td>  <a href="{{ route('editUser', ['userID' => $post->approved->id ]) }}"> {{ $post->approved->first_name  }} </a></td>
+
         <td>
             @if ($post['edited'] != null)
-            <a href="{{ route('editUser',['id' => $post['edited']->id ]) }}">{{ $post['edited']->first_name  }}
+                <a href="{{ route('editUser', ['userID' => $post->edited->id ]) }}">{{ $post->edited->first_name  }}</a>
 
              @else  {{  "Not updated" }}
             @endif
         </td>
 
 
-        <td>  <a href="{{ route('editPost', ['id' => $post->id ]) }}"><i class="fas fa-edit"></i>  </a></td>
+        <td>  <a href="{{ route('editPost', ['postID' => $post->id ]) }}"><i class="fas fa-edit"></i>  </a></td>
 
 
 
         @can('delete', $post)
         <td>
 
-            <form action="{{ route('deletePost', ['id' => $post->id ]) }}" method="POST">
+            <form action="{{ route('deletePost', ['postID' => $post->id ]) }}" method="POST">
                 @CSRF
                 @method('DELETE')
 
@@ -98,11 +102,11 @@ $controller = new \App\Http\Controllers\Controller();
         @endcan
 
     </tr>
-        @endcan
+
     @endforeach
 
 </table>
-
+<a href="">{{ $posts->links() }}</a>
 
 @else {{ "NO POSTS" }}
 

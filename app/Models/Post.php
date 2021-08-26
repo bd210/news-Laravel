@@ -20,20 +20,6 @@ class Post extends Model
     ];
 
 
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::creating(function ($query) {
-
-            if (auth()->check())
-            $query->author_id = auth()->user()->id;
-
-        });
-
-
-    }
-
 
 
 

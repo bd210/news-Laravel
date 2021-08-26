@@ -5,11 +5,11 @@ namespace App\Http\Controllers\back;
 use App\Http\Requests\Files\FileUpdateRequest;
 use App\Http\Requests\Posts\PostCreateRequest;
 use App\Http\Requests\Posts\PostUpdateRequest;
+use App\Models\Category;
 use App\Models\File;
 use App\Models\Post;
-use App\Repositories\CategoryRespository;
+use App\Models\Tag;
 use App\Repositories\PostRepository;
-use App\Repositories\TagRepository;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
@@ -18,14 +18,12 @@ class PostController extends BackendController
 {
 
     protected $post;
-    protected $tag;
-    protected $category;
 
-    public function __construct(PostRepository $post, TagRepository $tag, CategoryRespository $category)
+
+    public function __construct(PostRepository $post)
     {
         $this->post = $post;
-        $this->tag = $tag;
-        $this->category = $category;
+
     }
 
 
@@ -46,8 +44,8 @@ class PostController extends BackendController
     public function create()
     {
 
-        $this->data['tags'] = $this->tag->all();
-        $this->data['categories'] = $this->category->all();
+        $this->data['tags'] = Tag::all();
+        $this->data['categories'] = Category::all();
         $this->data['post'] = new Post();
 
         return view('pages.back.posts.create', $this->data);
@@ -100,8 +98,8 @@ class PostController extends BackendController
     {
         if ($postID) {
 
-            $this->data['categories'] = $this->category->all();
-            $this->data['tags'] = $this->tag->all();
+            $this->data['categories'] = Category::all();
+            $this->data['tags'] = Tag::all();
 
             $this->data['likes'] = $this->post->getCountPostLikes($postID->id);
             $result = $this->data['post'] = $this->post->getAllPostsForEdit($postID->id);
